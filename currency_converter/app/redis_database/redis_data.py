@@ -1,9 +1,10 @@
-import aioredis
+from aioredis import create_redis_pool, commands
 from typing import Dict
+from ..exception_1 import DataBaseError
 
 
 async def upload(data: Dict[str,  str], merge: bool) -> None:
-    redis: aioredis.commands.Redis = await aioredis.create_redis_pool('redis://redis')
+    redis: commands.Redis = await create_redis_pool('redis://localhost')
     if not merge:
         await redis.flushdb(async_op=True)
     currency: str
@@ -15,9 +16,9 @@ async def upload(data: Dict[str,  str], merge: bool) -> None:
 
 
 async def convert(from_: str, to: str, amount: float) -> float:
-    redis: aioredis.commands.Redis = await aioredis.create_redis_pool('redis://redis')
+    redis: commands.Redis = await create_redis_pool('redis://localhost')
     if not await redis.exists(from_):
-        raise (from_, 'not exists in database')
+        raise DataBaseError(from_, 'not exists in database')
     if not await redis.exists(to):
         raise (to, 'not exists in database')
     value_from = float((await redis.get(from_)).decode('utf-8'))

@@ -2,7 +2,7 @@ from aiohttp.web_request import Request
 from aiohttp.web_response import Response
 from aiohttp.web import Application, run_app, json_response
 from app.helpers.help import is_float
-from app.redis_database.redis_data import upload, convert
+import app.redis_database as db
 from typing import Dict
 from app.exceptions.exceptions import ValueErrorRequest
 
@@ -22,7 +22,7 @@ async def converted(request: Request) -> Response:
         if 'amount' not in request.query:
             raise ValueErrorRequest('amount', 'not found')
         amount = float(request.query['amount'])
-        value: float = await convert(from_, to, amount)
+        value: float = await db.convert(from_, to, amount)
         response_obj: Dict[str, str] = {'amount': str(value)}
         return json_response(response_obj, status=200)
     except ValueErrorRequest as e:
@@ -30,6 +30,9 @@ async def converted(request: Request) -> Response:
         print(str(e))
         return json_response(response_obj, status=400)
     except ValueError as e:
+        response_obj: Dict[str, str] = {'message': str(e)}
+        return json_response(response_obj, status=400)
+    except db.DataBaseError as e:
         response_obj: Dict[str, str] = {'message': str(e)}
         return json_response(response_obj, status=400)
     except ConnectionRefusedError as e:
@@ -49,7 +52,7 @@ async def database(request: Request) -> Response:
                 raise ValueErrorRequest(key, "must be a string consisting of letters")
             if not is_float(value):
                 raise ValueErrorRequest(value, "must be a float")
-        await upload(data, request.query['merge'] == '1')
+        await db.upload(data, request.query['merge'] == '1')
         return json_response({'status': 'ok'}, status=201)
     except ConnectionRefusedError as e:
         response_obj: Dict[str, str] = {'message': str(e)}
