@@ -1,7 +1,7 @@
 import aioredis
 from typing import Dict
 
-from .exceptions.exceptions import DataBaseError
+from ..exceptions.exceptions import DataBaseError
 
 
 async def upload(data: Dict[str,  str], merge: bool) -> None:

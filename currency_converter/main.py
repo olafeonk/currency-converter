@@ -3,9 +3,8 @@ from aiohttp.web_response import Response
 from aiohttp.web import Application, run_app, json_response
 from app.helpers.help import is_float
 from app.redis_database.redis_data import upload, convert
-from app.redis_database.exc.exception_1 import DataBaseError
 from typing import Dict
-from app.exceptions.exceptions import ValueErrorRequest
+from app.exceptions.exceptions import ValueErrorRequest, DataBaseError
 
 
 async def converted(request: Request) -> Response:
