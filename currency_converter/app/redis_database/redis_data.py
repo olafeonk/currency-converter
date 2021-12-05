@@ -5,7 +5,7 @@ from .exceptions.exceptions import DataBaseError
 
 
 async def upload(data: Dict[str,  str], merge: bool) -> None:
-    redis: commands.Redis = await create_redis_pool('redis://localhost')
+    redis: aioredis.commands.Redis = await aioredis.create_redis_pool('redis://localhost')
     if not merge:
         await redis.flushdb(async_op=True)
     currency: str
@@ -17,7 +17,7 @@ async def upload(data: Dict[str,  str], merge: bool) -> None:
 
 
 async def convert(from_: str, to: str, amount: float) -> float:
-    redis: commands.Redis = await create_redis_pool('redis://localhost')
+    redis: aioredis.commands.Redis = await aioredis.create_redis_pool('redis://localhost')
     if not await redis.exists(from_):
         raise DataBaseError(from_, 'not exists in database')
     if not await redis.exists(to):
