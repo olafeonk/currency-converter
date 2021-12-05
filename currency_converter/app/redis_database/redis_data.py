@@ -1,6 +1,7 @@
-from aioredis import create_redis_pool, commands
+import aioredis
 from typing import Dict
-from ..exception_1 import DataBaseError
+
+from .exceptions.exceptions import DataBaseError
 
 
 async def upload(data: Dict[str,  str], merge: bool) -> None:
