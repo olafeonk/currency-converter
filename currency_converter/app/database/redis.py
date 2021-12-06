@@ -1,7 +1,7 @@
 import aioredis
 from typing import Dict
 
-from ..exceptions.exceptions import DataBaseError
+from ..helpers.handlers_exceptions import get_currency_rate
 
 
 async def upload(data: Dict[str,  str], merge: bool) -> None:
@@ -18,12 +18,10 @@ async def upload(data: Dict[str,  str], merge: bool) -> None:
 
 async def convert(from_: str, to: str, amount: float) -> float:
     redis: aioredis.commands.Redis = await aioredis.create_redis_pool('redis://localhost')
-    if not await redis.exists(from_):
-        raise DataBaseError(from_, 'not exists in database')
-    if not await redis.exists(to):
-        raise (to, 'not exists in database')
-    value_from = float((await redis.get(from_)).decode('utf-8'))
-    value_to = float((await redis.get(to)).decode('utf-8'))
+
+    value_from = await get_currency_rate(from_, redis)
+    value_to = await get_currency_rate(to, redis)
     redis.close()
     await redis.wait_closed()
     return amount * value_to / value_from
+

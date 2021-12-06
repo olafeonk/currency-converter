@@ -1,17 +1,22 @@
-class ValueErrorRequest(ValueError):
+class RequestError(Exception):
+    pass
+
+
+class ParamNotFound(RequestError):
+    def __init__(self, param):
+        self.param = param
+        super().__init__(f"Param {param} was not found in request")
+
+
+class IncorrectRequestValue(RequestError):
     def __init__(self, value, message):
         self.value = value
-        self.message = message
-        super().__init__(self.message)
+        super().__init__(f"Value {value} should be a {message}")
 
-    def __str__(self):
-        return f"{self.value} {self.message}"
 
-class DataBaseError(Exception):
-    def __init__(self, value, message):
-        self.value = value
-        self.message = message
-        super().__init__(self.message)
+class CurrencyNotFound(RequestError):
+    def __init__(self, currency):
+        self.currency = currency
+        super().__init__(f"Currency {currency} was not found in database")
 
-    def __str__(self):
-        return f"{self.value} {self.message}"
+
