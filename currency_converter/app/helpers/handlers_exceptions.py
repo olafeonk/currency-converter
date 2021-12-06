@@ -1,7 +1,7 @@
 import aioredis
-from ..exceptions import CurrencyNotFound, ParamNotFound, IncorrectRequestValue
+from ..exceptions import CurrencyNotFound, ParamNotFound, IncorrectRequestValue, RequestError
 from .helpers import is_float
-from typing import Dict
+from typing import Dict, Tuple
 
 
 async def get_currency_rate(currency: str, redis: aioredis.commands.Redis) -> float:
@@ -29,3 +29,17 @@ def correct_data(data: Dict[str, str]) -> None:
     for key, value in data.items():
         value_is_letter(key)
         value_is_float(value)
+
+
+def get_query(query) -> Tuple[str, str, float]:
+    try:
+        key_in_query('from', query)
+        key_in_query('to', query)
+        key_in_query('amount', query)
+        value_is_letter(query['from'])
+        value_is_letter(query['to'])
+        value_is_float(query['amount'])
+    except RequestError:
+        raise
+    else:
+        return query['from'], query['to'], float(query['amount'])

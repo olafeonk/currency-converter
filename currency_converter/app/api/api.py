@@ -1,24 +1,10 @@
 from ..database.redis import upload, convert
-from typing import Dict, Tuple
+from typing import Dict,
 from aiohttp.web_request import Request
 from aiohttp.web_response import Response
 from aiohttp.web import json_response
-from ..helpers.handlers_exceptions import key_in_query, value_is_letter, value_is_float, correct_data
+from ..helpers.handlers_exceptions import correct_data, get_query
 from ..exceptions import RequestError
-
-
-def get_query(query) -> Tuple[str, str, float]:
-    try:
-        key_in_query('from', query)
-        key_in_query('to', query)
-        key_in_query('amount', query)
-        value_is_letter(query['from'])
-        value_is_letter(query['to'])
-        value_is_float(query['amount'])
-    except RequestError:
-        raise
-    else:
-        return query['from'], query['to'], float(query['amount'])
 
 
 async def converted(request: Request) -> Response:
