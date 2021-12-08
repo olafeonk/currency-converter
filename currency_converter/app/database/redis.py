@@ -5,7 +5,8 @@ from ..helpers.handlers_exceptions import get_currency_rate
 
 
 async def upload(data: Dict[str,  str], merge: bool) -> None:
-    redis: aioredis.commands.Redis = await aioredis.create_redis_pool('redis://localhost')
+    '''Загрузка в базу данных сведений о курсе валют'''
+    redis: aioredis.commands.Redis = await aioredis.create_redis_pool('redis://redis')
     if not merge:
         await redis.flushdb(async_op=True)
     currency: str
@@ -17,7 +18,8 @@ async def upload(data: Dict[str,  str], merge: bool) -> None:
 
 
 async def convert(from_: str, to: str, amount: float) -> float:
-    redis: aioredis.commands.Redis = await aioredis.create_redis_pool('redis://localhost')
+    '''Перевод amount валюты from в валюту to'''
+    redis: aioredis.commands.Redis = await aioredis.create_redis_pool('redis://redis')
 
     value_from = await get_currency_rate(from_, redis)
     value_to = await get_currency_rate(to, redis)

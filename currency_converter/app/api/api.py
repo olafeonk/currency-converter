@@ -1,5 +1,5 @@
 from ..database.redis import upload, convert
-from typing import Dict,
+from typing import Dict
 from aiohttp.web_request import Request
 from aiohttp.web_response import Response
 from aiohttp.web import json_response
@@ -8,6 +8,7 @@ from ..exceptions import RequestError
 
 
 async def converted(request: Request) -> Response:
+    '''Конвертация валюты'''
     try:
         from_, to, amount = get_query(request.query)
         value: float = await convert(from_, to, amount)
@@ -23,6 +24,7 @@ async def converted(request: Request) -> Response:
 
 
 async def database(request: Request) -> Response:
+    '''установка курса валют'''
     try:
         data: Dict[str, str] = dict(await request.post())
         correct_data(data)
